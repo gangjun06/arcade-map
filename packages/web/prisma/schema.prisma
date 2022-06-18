@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+model Store {
+  id                  Int         @id @default(autoincrement())
+  lat                 Float       @default(0)
+  lon                 Float       @default(0)
+  name                String
+  description         String
+  position            String
+  positionDescription String
+  openAt              DateTime    @db.Time
+  closeAt             DateTime    @db.Time
+  StoreItem           StoreItem[]
+}
+
+model StoreItem {
+  id      String @id @default(cuid())
+  gameId  Int
+  game    Game   @relation(fields: [gameId], references: [id])
+  note    String
+  storeId Int
+  store   Store  @relation(fields: [storeId], references: [id])
+  count   Int
+  price   String
+}
+
+enum GameType {
+  Rhythm
+}
+
+model Game {
+  id        Int         @id @default(autoincrement())
+  name      String
+  category  GameType
+  StoreItem StoreItem[]
+}
